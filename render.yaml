@@ -1,9 +1,11 @@
 services:
   - type: web
     name: mcp-complete
-    env: docker
+    env: node
     region: oregon
     plan: free
+    buildCommand: npm ci --production
+    startCommand: node src/server.js
     envVars:
       - key: NODE_ENV
         value: production
