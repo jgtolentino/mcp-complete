@@ -1,0 +1,78 @@
+{
+  "name": "MCP Complete Server",
+  "version": "1.0.0",
+  "description": "SQLite-based MCP server for Claude Desktop",
+  "author": "MCP Complete",
+  "license": "MIT",
+  "main": "server.js",
+  "mcp": {
+    "version": "1.0",
+    "tools": [
+      {
+        "name": "sqlite_get",
+        "description": "Retrieve value by key from SQLite database",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "The key to retrieve"
+            }
+          },
+          "required": ["key"]
+        }
+      },
+      {
+        "name": "sqlite_set",
+        "description": "Store key-value pair in SQLite database",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "The key to store"
+            },
+            "value": {
+              "type": "string",
+              "description": "The value to store"
+            }
+          },
+          "required": ["key", "value"]
+        }
+      },
+      {
+        "name": "sqlite_delete",
+        "description": "Delete a key from SQLite database",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "The key to delete"
+            }
+          },
+          "required": ["key"]
+        }
+      },
+      {
+        "name": "sqlite_list",
+        "description": "List all keys or filter by pattern",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "Optional pattern to filter keys"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  }
+}

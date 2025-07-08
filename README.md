@@ -30,15 +30,27 @@ npm start
 ### Desktop Application
 
 ```bash
-# Build desktop app
+# Quick start (development mode)
 ./build-desktop.sh
 
-# Or manually:
+# Build installer
+./build-desktop.sh build
+
+# Manual control:
 cd desktop
 npm install
-npm start  # Development
-npm run dist  # Build installer
+npm start      # Development mode
+npm run dist   # Build installer
 ```
+
+### Desktop Features
+
+- 🖥️ Native application with system tray
+- 🔄 Auto-start MCP server on launch
+- 📊 Real-time health monitoring
+- 🧪 Built-in endpoint testing UI
+- ⚙️ Environment variable support
+- 🎨 Cross-platform (macOS, Windows, Linux)
 
 ### Deploy to Render
 

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node tests/test.js"
+    "test": "node tests/test.js",
+    "build-dxt": "./build-dxt.sh"
   },
   "keywords": [
     "mcp",
