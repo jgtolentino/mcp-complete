@@ -1,6 +1,6 @@
 # MCP Complete Server
 
-A clean, simple Model Context Protocol (MCP) server for Claude integration.
+A clean, simple Model Context Protocol (MCP) server for Claude integration with desktop app support.
 
 ## Features
 
@@ -9,6 +9,9 @@ A clean, simple Model Context Protocol (MCP) server for Claude integration.
 - Simple key-value operations
 - Production-ready with health checks
 - Render deployment ready
+- Desktop application with Electron
+- System tray integration
+- Cross-platform support (macOS, Windows, Linux)
 
 ## Quick Start
 
@@ -22,6 +25,19 @@ npm install
 npm start
 
 # Server runs on http://localhost:10000
+```
+
+### Desktop Application
+
+```bash
+# Build desktop app
+./build-desktop.sh
+
+# Or manually:
+cd desktop
+npm install
+npm start  # Development
+npm run dist  # Build installer
 ```
 
 ### Deploy to Render

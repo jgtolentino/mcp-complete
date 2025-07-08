@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MCP Desktop</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .status-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-running {
+            background: #27ae60;
+        }
+        .status-stopped {
+            background: #e74c3c;
+        }
+        .endpoints {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .endpoint-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .endpoint-item:last-child {
+            border-bottom: none;
+        }
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #2980b9;
+        }
+        .logs {
+            background: #2c3e50;
+            color: #1abc9c;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tool-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .integration-section {
+            background: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 MCP Desktop Server</h1>
+        <p>Local Model Context Protocol Server for Claude</p>
+    </div>
+
+    <div class="container">
+        <div class="status-card">
+            <h2>Server Status</h2>
+            <p>
+                <span class="status-indicator status-running" id="status-indicator"></span>
+                <span id="status-text">Running</span>
+            </p>
+            <p>Local URL: <code>http://localhost:10000</code></p>
+            <p>Public URL: <code id="public-url">https://mcp-complete.onrender.com</code></p>
+            <div style="margin-top: 15px;">
+                <button class="button" onclick="openBrowser('http://localhost:10000/health')">Check Health</button>
+                <button class="button" onclick="refreshStatus()">Refresh Status</button>
+            </div>
+        </div>
+
+        <div class="endpoints">
+            <h2>Available Endpoints</h2>
+            <div class="endpoint-item">
+                <div>
+                    <strong>Health Check</strong>
+                    <br><code>/health</code>
+                </div>
+                <button class="button" onclick="testEndpoint('/health')">Test</button>
+            </div>
+            <div class="endpoint-item">
+                <div>
+                    <strong>MCP Discovery</strong>
+                    <br><code>/.well-known/mcp</code>
+                </div>
+                <button class="button" onclick="testEndpoint('/.well-known/mcp')">Test</button>
+            </div>
+            <div class="endpoint-item">
+                <div>
+                    <strong>MCP Tools</strong>
+                    <br><code>/mcp/call</code>
+                </div>
+                <button class="button" onclick="showTools()">View Tools</button>
+            </div>
+        </div>
+
+        <div class="integration-section">
+            <h2>Claude Integration</h2>
+            <p>Add this configuration to Claude Web App:</p>
+            <div class="code-block">
+Name: MCP Desktop Server
+URL: http://localhost:10000  (for local)
+URL: https://mcp-complete.onrender.com  (for cloud)
+Type: HTTP
+Auth: None
+            </div>
+        </div>
+
+        <div class="tools-grid" id="tools-grid" style="display: none;">
+            <div class="tool-card">
+                <h3>sqlite_get</h3>
+                <p>Retrieve value by key from the database</p>
+            </div>
+            <div class="tool-card">
+                <h3>sqlite_set</h3>
+                <p>Store key-value pair in the database</p>
+            </div>
+            <div class="tool-card">
+                <h3>sqlite_delete</h3>
+                <p>Delete a key from the database</p>
+            </div>
+            <div class="tool-card">
+                <h3>sqlite_list</h3>
+                <p>List all keys or filter by pattern</p>
+            </div>
+        </div>
+
+        <h2>Server Logs</h2>
+        <div class="logs" id="logs">
+MCP Desktop Server Started...
+Waiting for server logs...
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer, shell } = require('electron');
+
+        function openBrowser(url) {
+            shell.openExternal(url);
+        }
+
+        async function refreshStatus() {
+            const status = await ipcRenderer.invoke('get-server-status');
+            const indicator = document.getElementById('status-indicator');
+            const text = document.getElementById('status-text');
+            
+            if (status.running) {
+                indicator.className = 'status-indicator status-running';
+                text.textContent = 'Running';
+            } else {
+                indicator.className = 'status-indicator status-stopped';
+                text.textContent = 'Stopped';
+            }
+        }
+
+        async function testEndpoint(endpoint) {
+            try {
+                const response = await fetch(`http://localhost:10000${endpoint}`);
+                const data = await response.json();
+                addLog(`Test ${endpoint}: ${response.status} OK`);
+                addLog(JSON.stringify(data, null, 2));
+            } catch (error) {
+                addLog(`Test ${endpoint} failed: ${error.message}`);
+            }
+        }
+
+        function showTools() {
+            const toolsGrid = document.getElementById('tools-grid');
+            toolsGrid.style.display = toolsGrid.style.display === 'none' ? 'grid' : 'none';
+        }
+
+        function addLog(message) {
+            const logs = document.getElementById('logs');
+            logs.textContent += `\n[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Initial status check
+        refreshStatus();
+        setInterval(refreshStatus, 5000);
+
+        // Add initial log
+        addLog('MCP Desktop UI initialized');
+        addLog('Connecting to local server...');
+    </script>
+</body>
+</html>
