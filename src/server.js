@@ -33,11 +33,23 @@ const logger = winston.createLogger({
 
 const app = express();
 
+// Enhanced CORS configuration for Claude
+const corsOptions = {
+  origin: '*', // Allow all origins for Claude integration
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers need this
+};
+
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
 
 // Database setup
 const setupDatabase = () => {
@@ -87,6 +99,12 @@ const initServer = async () => {
 
     // MCP Discovery endpoint - required by Claude
     app.get('/.well-known/mcp', (req, res) => {
+      // Set explicit headers for Claude
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type');
+      res.header('Content-Type', 'application/json');
+      
       res.json({
         mcp_version: "1.0",
         name: "MCP Complete Server",
@@ -142,8 +160,17 @@ const initServer = async () => {
 
     // MCP endpoint
     app.post('/mcp/call', async (req, res) => {
+      // Set explicit headers
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Content-Type', 'application/json');
+      
       try {
         const { tool, parameters } = req.body;
+        
+        // Validate request
+        if (!tool) {
+          return res.status(400).json({ error: 'Missing tool parameter' });
+        }
         
         switch(tool) {
           case 'sqlite_get':
